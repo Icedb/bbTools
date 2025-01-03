@@ -1,0 +1,51 @@
+{
+  "name": "bb-tools",
+  "version": "0.1.5",
+  "main": "dist-electron/main/index.js",
+  "description": "蹦蹦团战分析工具",
+  "author": "jcebd",
+  "license": "MIT",
+  "private": true,
+  "keywords": [
+    "electron",
+    "rollup",
+    "vite",
+    "vue3",
+    "vue"
+  ],
+  "debug": {
+    "env": {
+      "VITE_DEV_SERVER_URL": "http://127.0.0.1:3344/"
+    }
+  },
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build && electron-builder",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.4",
+    "electron": "^29.1.1",
+    "electron-builder": "^24.13.3",
+    "sass": "^1.83.0",
+    "typescript": "^5.4.2",
+    "unplugin-auto-import": "^0.19.0",
+    "unplugin-vue-components": "^0.28.0",
+    "vite": "^5.1.5",
+    "vite-plugin-electron": "^0.28.4",
+    "vite-plugin-electron-renderer": "^0.14.5",
+    "vue": "^3.4.21",
+    "vue-tsc": "^2.0.6"
+  },
+  "dependencies": {
+    "@element-plus/icons-vue": "^2.3.1",
+    "axios": "^1.7.9",
+    "echarts": "^5.6.0",
+    "element-plus": "^2.9.1",
+    "fs": "0.0.1-security",
+    "vue-draggable-next": "^2.2.1",
+    "vue-router": "^4.5.0",
+    "vuex": "^4.1.0"
+  }
+}
