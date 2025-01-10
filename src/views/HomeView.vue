@@ -1,20 +1,15 @@
 <template>
-  <el-scrollbar >
+  <el-scrollbar v-loading="fullLoading">
     <div class="home-box">
       <div class="title-box">
         <h2>米游社 cookie</h2>
-        <el-tooltip
-          class="box-item"
-          effect="light"
-          content="输入从米游社获取的cookie，详情请查看帮助"
-          placement="right"
-        >
+        <el-tooltip class="box-item" effect="light" content="输入从米游社获取的cookie，详情请查看帮助" placement="right">
           <el-icon size="18px" color='#f56c6c'><question-filled /></el-icon>
         </el-tooltip>
       </div>
       <el-row align="middle" style="margin-bottom: 50px">
         <el-col :span="22">
-          <el-input v-model="cookie" clearable autosize :disabled="cookieDisabled"/>
+          <el-input v-model="cookie" clearable autosize :disabled="cookieDisabled" />
         </el-col>
         <el-col :span="1" :offset="1">
           <el-icon :size="22" @click="cookieLock">
@@ -23,94 +18,127 @@
           </el-icon>
         </el-col>
       </el-row>
-      <div class="title-box">
-        <h2>输入分组信息</h2>
-        <el-button type="primary" size='small' circle class="add-btn" @click="beforeAddGroup()"><el-icon style="font-size: 14px;"><plus /></el-icon></el-button>
+      <div class="flex-between">
+        <div class="title-box">
+          <h2>分组信息 <span v-show="isModify" class="modify-tip">*</span></h2>
+          <el-button type="primary" size='small' circle class="add-btn" @click="beforeAddGroup()"><el-icon
+              style="font-size: 14px;">
+              <plus />
+            </el-icon></el-button>
+        </div>
+        <div>
+          <el-link type="primary" class="down-template" href="./src/assets/files/社团成员名单模板.xls" :icon="Download">下载成员名单模板</el-link>
+          <el-button type="primary" @click="uploadExcel" :icon="Upload">读取成员信息</el-button>
+        </div>
       </div>
       <el-row :gutter="20">
-        <el-col :lg="8" :xs="24" :sm="12" v-for="(item,gIndex) in groupList" :key="gIndex">
+        <el-col :lg="8" :xs="24" :sm="12" v-for="(item, gIndex) in groupList" :key="gIndex">
           <div class="group-title">
             <div class="group-name">
-              <h3>{{item.groupName}}</h3>
-              <el-button type="primary" size="small" circle @click="editGroupName(gIndex)"><el-icon><edit-pen /></el-icon></el-button>
+              <h3>{{ item.groupName }}</h3>
+              <el-button type="primary" size="small" circle
+                @click="editGroupName(gIndex)"><el-icon><edit-pen /></el-icon></el-button>
             </div>
-            <el-button type="danger" size="small" circle @click="deleteGroup(gIndex,item.groupName)"><el-icon><Close /></el-icon></el-button>
+            <el-button type="danger" size="small" circle @click="deleteGroup(gIndex, item.groupName)"><el-icon>
+                <Close />
+              </el-icon></el-button>
           </div>
           <!-- 优化1：增加编辑分队和增加删除 -->
           <!-- <input type="text" class="my-input"> -->
           <el-scrollbar max-height="600px">
-          <div class="list-group">
-            <!-- 此处为表头 -->
-            <div class="list-title">
-              <el-row align="middle">
-                <el-col :span="2">
-                  <p style="font-size: 12px;">移动</p>
-                </el-col>
-                <el-col :span="6">
-                  <p>昵称</p>
-                </el-col>
-                <el-col :span="7">
-                  <p>uid</p>
-                </el-col>
-                <el-col :span="2">
-                  <p class="state">状态</p>
-                </el-col>
-                <el-col :span="7">
-                  <p>操作</p>
-                </el-col>
-              </el-row>
-            </div>
-            <draggable
-              group="people"
-              itemKey="name"
-              handle=".rank-col"
-              @start="startDrag"
-              @add="addDrag"
-            >
-              <template v-for="(element,index) in item.group" :key="index">
-                <div v-if="element.hasEdit == 0">
-                  <el-row align="middle" class="list-item">
-                    <el-col :span="2" class="rank-col">
-                      <el-icon><expand /></el-icon>
-                    </el-col>
-                    <el-col :span="6">
-                      <p>{{ element.name }}</p>
-                    </el-col>
-                    <el-col :span="7">
-                      <p>{{ element.uid }}</p>
-                    </el-col>
-                    <el-col :span="2">
-                      <p class="state" v-if="!element.battle_info && !element.message">未获取</p>
-                      <p class="state" v-else-if="element.battle_info && !element.message">已获取</p>
-                      <el-tooltip
-                        class="box-item"
-                        effect="light"
-                        :content="element.message || '数据异常'"
-                        placement="top"
-                        v-else
-                      >
-                      <el-icon color="#f56c6c" class="col-warning"><warning /></el-icon>
-                      </el-tooltip>
-                    </el-col>
-                    <el-col :span="7" class="operation-btn">
-                      <el-tooltip
-                        class="box-item"
-                        effect="light"
-                        content="重新获取本成员数据"
-                        placement="top"
-                      >
-                        <el-icon @click="refreshPeople(gIndex, index, element.name, element.uid)" style="cursor: pointer"><refresh /></el-icon>
-                      </el-tooltip>
+            <div class="list-group">
+              <!-- 此处为表头 -->
+              <div class="list-title">
+                <el-row align="middle">
+                  <el-col :span="2">
+                    <p style="font-size: 12px;">移动</p>
+                  </el-col>
+                  <el-col :span="6">
+                    <p>昵称</p>
+                  </el-col>
+                  <el-col :span="7">
+                    <p>uid</p>
+                  </el-col>
+                  <el-col :span="2">
+                    <p class="state">状态</p>
+                  </el-col>
+                  <el-col :span="7">
+                    <p>操作</p>
+                  </el-col>
+                </el-row>
+              </div>
+              <draggable group="people" itemKey="name" handle=".rank-col" @start="startDrag" @add="addDrag">
+                <template v-for="(element, index) in item.group" :key="index">
+                  <div v-if="element.hasEdit == 0">
+                    <el-row align="middle" class="list-item">
+                      <el-col :span="2" class="rank-col">
+                        <el-icon>
+                          <expand />
+                        </el-icon>
+                      </el-col>
+                      <el-col :span="6">
+                        <p>{{ element.name }}</p>
+                      </el-col>
+                      <el-col :span="7">
+                        <p>{{ element.uid }}</p>
+                      </el-col>
+                      <el-col :span="2">
+                        <p class="state" v-if="!element.profile && !element.message">未获取</p>
+                        <p class="state" v-else-if="element.profile && !element.message">已获取</p>
+                        <el-tooltip class="box-item" effect="light" :content="element.message || '数据异常'" placement="top"
+                          v-else>
+                          <el-icon color="#f56c6c" class="col-warning">
+                            <warning />
+                          </el-icon>
+                        </el-tooltip>
+                      </el-col>
+                      <el-col :span="7" class="operation-btn">
+                        <el-tooltip class="box-item" effect="light" content="单独获取本成员数据" placement="top">
+                          <el-icon @click="refreshPeople(element)" style="cursor: pointer">
+                            <refresh />
+                          </el-icon>
+                        </el-tooltip>
 
-                      <el-icon @click="editPeople(gIndex, index)" style="cursor: pointer"><edit-pen /></el-icon>
-                      <el-icon @click="deletePeople(gIndex, index, element.name)" style="cursor: pointer"><delete-filled /></el-icon>
-                    </el-col>
-                  </el-row>
+                        <el-icon @click="editPeople(gIndex, index)" style="cursor: pointer"><edit-pen /></el-icon>
+                        <el-icon @click="deletePeople(gIndex, index, element.name)"
+                          style="cursor: pointer"><delete-filled /></el-icon>
+                      </el-col>
+                    </el-row>
+                  </div>
+                  <div v-else class="operation-box">
+                    <el-row align="middle">
+                      <el-col :span="2" class="rank-col">
+                        <el-icon>
+                          <expand />
+                        </el-icon>
+                      </el-col>
+                      <el-col :span="6">
+                        <input type="text" v-model="nowPeopleName" placeholder="请输入昵称">
+                      </el-col>
+                      <el-col :span="7">
+                        <input type="number" v-model="nowPeopleUid" placeholder="请输入uid">
+                      </el-col>
+                      <el-col :span="2">
+                        <p class="state">状态</p>
+                      </el-col>
+                      <el-col :span="7">
+                        <el-button type="warning" size="small" @click="cancelEdit(gIndex, index)">取消</el-button>
+                        <el-button type="primary" size="small" @click="saveEdit(gIndex, index)">保存</el-button>
+                      </el-col>
+                    </el-row>
+                  </div>
+
+                </template>
+              </draggable>
+              <div class="add-box">
+                <div class="list-add justify-center" v-if="item.hasAdd == 0">
+                  <el-button type="primary" @click="addPeople(gIndex)"><el-icon class="el-icon--left">
+                      <Plus />
+                    </el-icon>添加成员</el-button>
                 </div>
                 <div v-else class="operation-box">
                   <el-row align="middle">
                     <el-col :span="2" class="rank-col">
-                      <el-icon><expand /></el-icon>
                     </el-col>
                     <el-col :span="6">
                       <input type="text" v-model="nowPeopleName" placeholder="请输入昵称">
@@ -121,40 +149,14 @@
                     <el-col :span="2">
                       <p class="state">状态</p>
                     </el-col>
-                    <el-col :span="7">
-                      <el-button type="warning" size="small" @click="cancelEdit(gIndex, index)">取消</el-button>
-                      <el-button type="primary" size="small" @click="saveEdit(gIndex, index)">保存</el-button>
+                    <el-col :span="7" class="operation-btn">
+                      <el-button type="warning" size="small" @click="cancelAdd(gIndex)">取消</el-button>
+                      <el-button type="primary" size="small" @click="saveAdd(gIndex)">保存</el-button>
                     </el-col>
                   </el-row>
                 </div>
-
-              </template>
-            </draggable>
-            <div class="add-box">
-              <div class="list-add justify-center" v-if="item.hasAdd == 0">
-                <el-button type="primary" @click="addPeople(gIndex)"><el-icon class="el-icon--left"><Plus /></el-icon>添加成员</el-button>
-              </div>
-              <div v-else class="operation-box">
-                <el-row align="middle">
-                  <el-col :span="2" class="rank-col">
-                  </el-col>
-                  <el-col :span="6">
-                    <input type="text" v-model="nowPeopleName" placeholder="请输入昵称">
-                  </el-col>
-                  <el-col :span="7">
-                    <input type="number" v-model="nowPeopleUid" placeholder="请输入uid">
-                  </el-col>
-                  <el-col :span="2">
-                    <p class="state">状态</p>
-                  </el-col>
-                  <el-col :span="7" class="operation-btn">
-                    <el-button type="warning" size="small" @click="cancelAdd(gIndex)">取消</el-button>
-                    <el-button type="primary" size="small" @click="saveAdd(gIndex)">保存</el-button>
-                  </el-col>
-                </el-row>
               </div>
             </div>
-          </div>
           </el-scrollbar>
         </el-col>
         <!-- <el-col :lg="8" :xs="24">
@@ -184,9 +186,12 @@
       </el-row>
 
       <h2 style="margin-top: 50px;"> </h2>
-      <el-button  @click="getUserData">获取数据</el-button>
-      <el-button type="primary" @click="saveGroupAndEditChart"><el-icon class="el-icon--left"><document-add /></el-icon>保存分组数据</el-button>
-      <el-button type="warning" @click="clearGroupData"><el-icon class="el-icon--left"><Delete /></el-icon>清空已获取数据</el-button>
+      <el-button @click="getUserGroupData">获取数据</el-button>
+      <el-button type="primary" @click="saveGroupAndEditChart"><el-icon
+          class="el-icon--left"><document-add /></el-icon>保存分组数据</el-button>
+      <el-button type="warning" @click="clearGroupData"><el-icon class="el-icon--left">
+          <Delete />
+        </el-icon>清空已获取数据</el-button>
     </div>
   </el-scrollbar>
 </template>
@@ -195,11 +200,12 @@
 /**
  * import 组件和库
  */
-import { ref, onMounted, reactive } from "vue";
+import { ref, onMounted, reactive, watch } from "vue";
 import { onBeforeRouteLeave } from "vue-router";
-import { useStore } from 'vuex';
-import { ElMessageBox, ElMessage, ElLoading } from 'element-plus';
-import { getUserGroupData, getUserSingleData } from '../api/push';
+import { ElMessageBox, ElMessage } from 'element-plus';
+import { getUserSingleData } from '@/utils/getData';
+import type { PeopleData } from '@/utils/getData';
+import loadExcel from '@/utils/loadExcel';
 
 import {
   VueDraggableNext as draggable
@@ -207,9 +213,11 @@ import {
 import {
   Lock,
   Unlock,
+  Upload,
   QuestionFilled,
   DocumentAdd,
   DeleteFilled,
+  Download,
   Delete,
   EditPen,
   Plus,
@@ -223,7 +231,6 @@ import type { FormInstance } from 'element-plus';
 /**
  * 定义响应式数据
  */
-const store = useStore();
 let serverName = '';
 const groupList = ref([
   { groupName: '分队 1', hasAdd: 0, group: <any>[] },
@@ -237,14 +244,13 @@ const nowPeopleUid = ref();
 const groupIndex = ref(-1);
 const peopleIndex = ref(-1);
 
-const ruleFormRef = ref<FormInstance>();
 const addRuleForm = reactive({ name: '' });
-const rules = reactive({
-  name: [{ required: true, message: '分组名不能为空', trigger: 'blur' }],
-});
 
 const cookieDisabled = ref(false);
 const cookie = ref('');
+const fullLoading = ref(false);
+
+
 
 /**
  * 生命周期钩子
@@ -256,7 +262,13 @@ onMounted(() => {
   cookieDisabled.value = cL == 'true';
   if (c) cookie.value = c;
   const groupData = <any>window.localStorage.getItem('groupData');
-  if (groupData) groupList.value = JSON.parse(groupData);
+  if (groupData) {
+    groupList.value = JSON.parse(groupData);
+  }
+  // 监听groupList变化，更改isModify状态
+  watch(groupList, () => {
+    isModify.value = true;
+  }, { deep: true, immediate: false });
 });
 
 onBeforeRouteLeave((to, from, next) => {
@@ -271,7 +283,7 @@ onBeforeRouteLeave((to, from, next) => {
     type: 'warning',
   })
     .then(() => next())
-    .catch(() => {});
+    .catch(() => { });
 });
 
 /**
@@ -296,9 +308,9 @@ const editGroupName = (index: number) => {
   })
     .then(({ value }) => {
       groupList.value[index].groupName = value;
-      isModify.value = true;
+      // isModify.value = true;
     })
-    .catch(() => {});
+    .catch(() => { });
 };
 
 // 删除分组
@@ -312,9 +324,9 @@ const deleteGroup = (index: number, groupName: string) => {
     .then(() => {
       groupList.value.splice(index, 1);
       ElMessage({ type: 'success', message: `已删除分组：${groupName}` });
-      isModify.value = true;
+      // isModify.value = true;
     })
-    .catch(() => {});
+    .catch(() => { });
 };
 
 // 添加分组
@@ -327,10 +339,10 @@ const beforeAddGroup = () => {
       if (value) {
         groupList.value.push({ groupName: value, hasAdd: 0, group: [] });
         ElMessage({ type: 'success', message: '添加分组成功' });
-        isModify.value = true;
+        // isModify.value = true;
       }
     })
-    .catch(() => {});
+    .catch(() => { });
 };
 
 const addGroup = async (formEl: FormInstance | undefined) => {
@@ -339,7 +351,7 @@ const addGroup = async (formEl: FormInstance | undefined) => {
     if (valid) {
       groupList.value.push({ groupName: addRuleForm.name, hasAdd: 0, group: [] });
       ElMessage({ type: 'success', message: '添加分组成功' });
-      isModify.value = true;
+      // isModify.value = true;
     }
   });
 };
@@ -393,52 +405,105 @@ const saveAdd = (index: number) => {
     hasEdit: 0,
   });
   groupList.value[index].hasAdd = 0;
-  isModify.value = true;
+  // isModify.value = true;
 };
 
+// 获取用户数据，refreshPeople和getUserGroupData两个方法使用，返回promise供getUserGroupData全量获取使用
+const getUserData = (userData: PeopleData) => {
+  return getUserSingleData({ uid: userData.uid, server: serverName }).then(
+    (res: any) => {
+      if (res && res.data && res.retcode == 0) {
+        cookieDisabled.value = true;
+        const singleData = res.data.profile;
+        // isModify.value = true;
+        return singleData;
+      } else {
+        cookieDisabled.value = false;
+        throw new Error(res.message || '获取数据失败');
+      }
+    }
+  )
+}
+
+// 刷新单个用户数据
 const refreshPeople = (
-  index: number,
-  people: number,
-  peopleName: string,
-  peopleUid: number
+  userData: PeopleData
 ) => {
-  ElMessageBox.confirm(`确认要单独获取成员 ${peopleName} 的团战数据吗？`, 'Warning', {
-    title: '警告',
+  if (!cookie.value) {
+    ElMessage({ type: 'error', message: '请输入cookie' });
+    return;
+  }
+  ElMessageBox.confirm(`确认要单独获取成员 ${userData.name} 的团战数据吗？`, 'Warning', {
+    title: '确认',
     confirmButtonText: '获取',
     cancelButtonText: '取消',
     type: 'warning',
   })
     .then(() => {
-      if (!cookie.value) {
-        ElMessage({ type: 'error', message: '请输入cookie' });
-        return;
-      }
-      window.localStorage.setItem('cookie', cookie.value);
-      const loading = ElLoading.service({ fullscreen: true });
-      getUserSingleData({ name: peopleName, uid: peopleUid, server: serverName }).then(
-        (res: any) => {
-          loading.close();
-          if (res && res.data && res.data.retcode == 0) {
-            cookieDisabled.value = true;
-            const singleData = res.data.data;
-            if (singleData) {
-              const gp = groupList.value[index].group[people];
-              if (gp.name == singleData.name) {
-                gp.message = '';
-                gp.battle_info = null;
-                Object.assign(gp, singleData);
-              }
-            }
-            isModify.value = true;
-          } else if (res && res.data && res.data.retcode == 10001) {
-            cookieDisabled.value = false;
-            ElMessage({ type: 'error', message: 'cookie无效或已过期' });
-          }
-        }
-      );
+      fullLoading.value = true;
+      return getUserData(userData);
     })
-    .catch(() => {});
+    .then((res) => {
+      fullLoading.value = false;
+      userData.message = '';
+      if (res) {
+        userData.profile = res || '';
+        ElMessage({ type: 'success', message: '获取成功' });
+      }
+    })
+    .catch((error) => {
+      fullLoading.value = false;
+      userData.message = error.message;
+      userData.profile = '';
+      ElMessage({ type: 'error', message: error.message });
+     });
 };
+
+// 批量获取用户数据
+const getUserGroupData = async () => {
+  if (!cookie.value) {
+    ElMessage({ type: 'error', message: '请输入cookie' });
+    return;
+  }
+  let hasPeople = false;
+  for (const g of groupList.value) {
+    if (g.group.length) {
+      hasPeople = true;
+      break;
+    }
+  }
+  if (!hasPeople) {
+    ElMessage({ type: 'error', message: '请输入至少一个成员' });
+    return;
+  }
+  window.localStorage.setItem('cookie', cookie.value);
+  // 遍历groupList 获取每个分组的数据，如果有数据则不再获取
+  fullLoading.value = true;
+  const promiseAllData = []
+  for (const gData of groupList.value) {
+    for (const pData of gData.group) {
+      if (!pData.profile) {
+        promiseAllData.push(getUserData(pData).then((res) => {
+          pData.message = '';
+          pData.profile = res || '';
+        }).catch((error) => {
+          pData.message = error.message;
+          pData.profile = '';
+        }));
+      }
+    }
+  }
+  Promise.all(promiseAllData).then((res) => {
+    fullLoading.value = false;
+    cookieDisabled.value = true
+
+    ElMessage({ type: 'success', message: '获取成功，请前往图表分析查看' });
+  }).catch(() => {
+    fullLoading.value = false;
+  });
+    
+
+}
 
 const editPeople = (index: number, people: number) => {
   restore();
@@ -468,7 +533,7 @@ const saveEdit = (index: number, people: number) => {
   gp.hasEdit = 0;
   gp.battle_info = null;
   gp.message = '';
-  isModify.value = true;
+  // isModify.value = true;
 };
 
 const deletePeople = (index: number, people: number, peopleName: string) => {
@@ -481,9 +546,9 @@ const deletePeople = (index: number, people: number, peopleName: string) => {
     .then(() => {
       restore();
       groupList.value[index].group.splice(people, 1);
-      isModify.value = true;
+      // isModify.value = true;
     })
-    .catch(() => {});
+    .catch(() => { });
 };
 
 const cookieLock = () => {
@@ -503,76 +568,100 @@ const clearGroupData = () => {
     type: 'warning',
   })
     .then(() => {
-      for (const g of groupList.value) {
-        for (const p of g.group) {
-          p.message = '';
-          p.battle_info = null;
+      for (const gData of groupList.value) {
+        for (const pData of gData.group) {
+          pData.message = '';
+          pData.profile = null;
         }
       }
       ElMessage({ type: 'success', message: '已清空全部成员缓存数据' });
     })
-    .catch(() => {});
+    .catch(() => { });
 };
 
-// 获取用户数据
-const getUserData = () => {
-  if (!cookie.value) {
-    ElMessage({ type: 'error', message: '请输入cookie' });
-    return;
-  }
-  let hasPeople = false;
-  for (const g of groupList.value) {
-    if (g.group.length) {
-      hasPeople = true;
-      break;
+// 上传
+const uploadExcel = () => {
+  // ElMessage({ type: 'info', message: '暂未开放' });
+  fullLoading.value = true;
+  loadExcel().then((res: any) => {
+    console.log('获取结果：');
+    console.log(res);
+    fullLoading.value = false;
+    if (!res || !res.length) {
+      ElMessage({ type: 'error', message: '数据为空或不符要求' });
+      return;
     }
-  }
-  if (!hasPeople) {
-    ElMessage({ type: 'error', message: '请输入至少一个成员' });
-    return;
-  }
-  const loading = ElLoading.service({ fullscreen: true });
-  window.localStorage.setItem('cookie', cookie.value);
-  getUserGroupData({ userObj: groupList.value, server: serverName }).then((res: any) => {
-    loading.close();
-    if (res && res.data && res.data.retcode == 0) {
-      cookieDisabled.value = true;
-      groupList.value = res.data.data;
-      ElMessage({ type: 'success', message: '获取成功，请前往图表分析查看' });
-      isModify.value = true;
-    } else if (res && res.data && res.data.retcode == 10001) {
-      cookieDisabled.value = false;
-      ElMessage({ type: 'error', message: 'cookie无效或已过期' });
-    }
+    groupList.value = res;
+  }).catch(() => {
+    fullLoading.value = false;
+    ElMessage({ type: 'error', message: '上传失败' });
   });
 };
+
+
+
+
+
+
+
+  // getUserGroupData({ userObj: groupList.value, server: serverName }).then((res: any) => {
+  //   loading.close();
+  //   console.log('getUserGroupData==============');
+  //   console.log(groupList.value);
+  //   console.log(res);
+  //   // if (res) {
+  //   //   cookieDisabled.value = true;
+  //   //   groupList.value = res.data;
+  //   //   ElMessage({ type: 'success', message: '获取成功，请前往图表分析查看' });
+  //   //   isModify.value = true;
+  //   // } else {
+  //   //   cookieDisabled.value = false;
+  //   //   ElMessage({ type: 'error', message: 'cookie无效或已过期' });
+  //   // }
+  // }).catch(() => {
+  //   loading.close();
+  // });
 </script>
 <style lang="scss" scoped>
-
-.home-box{
-  // padding: torem(20) torem(50) torem(10);
+.home-box {
+  padding: 20px 50px 10px;
 }
-.title-box{
+
+.flex-between{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+}
+
+.title-box {
   margin-bottom: 10px;
   display: flex;
   align-items: center;
-  h2{
+  h2 {
     margin-right: 10px;
   }
 }
 
+.down-template{
+  margin-right: 10px;
+  margin-top: 12px;
+}
 
-.group-title{
+
+.group-title {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 10px;
   margin-top: 20px;
   margin-bottom: 10px;
-  .group-name{
+
+  .group-name {
     display: flex;
     align-items: center;
-    h3{
+
+    h3 {
       max-width: 220px;
       white-space: nowrap;
       overflow: hidden;
@@ -581,47 +670,58 @@ const getUserData = () => {
     }
   }
 }
-.list-group{
+
+.list-group {
   display: flex;
   flex-direction: column;
   padding-left: 0;
   margin-bottom: 0;
   border-radius: 5px;
-  .list-title{
+
+  .list-title {
     width: 100%;
     background: #fff;
-    .el-col{
-      border: 1px solid rgba(0,0,0,.125);
-      &+.el-col{
+
+    .el-col {
+      border: 1px solid rgba(0, 0, 0, .125);
+
+      &+.el-col {
         border-left-width: 0;
       }
-      p{
+
+      p {
         height: 48px;
         width: 100%;
         display: flex;
         align-items: center;
         justify-content: center;
-        &.state{
+
+        &.state {
           font-size: 12px;
         }
       }
     }
   }
-  .list-item{
+
+  .list-item {
     background: #fff;
-    .rank-col{
+
+    .rank-col {
       cursor: move;
       display: flex;
       align-items: center;
       justify-content: center;
     }
-    .el-col{
-      border: 1px solid rgba(0,0,0,.125);
+
+    .el-col {
+      border: 1px solid rgba(0, 0, 0, .125);
       border-top-width: 0;
       min-height: 49px;
-      &+.el-col{
+
+      &+.el-col {
         border-left-width: 0;
       }
+
       p {
         width: 100%;
         height: 49px;
@@ -630,12 +730,14 @@ const getUserData = () => {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        &.state{
+
+        &.state {
           font-size: 12px;
         }
       }
     }
-    .operation-btn{
+
+    .operation-btn {
       width: 100%;
       // padding: 0.75rem 1.25rem;
       display: flex;
@@ -643,15 +745,18 @@ const getUserData = () => {
       justify-content: space-around;
     }
   }
-  .operation-box{
-    .el-col{
-      border: 1px solid rgba(0,0,0,.125);
+
+  .operation-box {
+    .el-col {
+      border: 1px solid rgba(0, 0, 0, .125);
       border-top-width: 0;
       min-height: 50px;
-      &+.el-col{
+
+      &+.el-col {
         border-left-width: 0;
       }
-      input{
+
+      input {
         margin-left: 5px;
         border: none;
         height: 48px;
@@ -659,7 +764,8 @@ const getUserData = () => {
         // font-size: 12px;
         outline: none;
       }
-      .state{
+
+      .state {
         width: 100%;
         height: 50px;
         text-align: center;
@@ -667,25 +773,32 @@ const getUserData = () => {
         white-space: nowrap;
         font-size: 12px;
         overflow: hidden;
-        text-overflow: ellipsis 
+        text-overflow: ellipsis
       }
-      .el-button+.el-button{
+
+      .el-button+.el-button {
         margin-left: 6px;
       }
     }
   }
 }
-.list-add{
+
+.modify-tip{
+  color: #f56c6c;
+}
+
+.list-add {
   position: relative;
   display: block;
   background-color: #fff;
-  border: 1px solid rgba(0,0,0,.125);
+  border: 1px solid rgba(0, 0, 0, .125);
   border-top-width: 0;
   height: 55px;
   align-items: center;
 }
-.add-box{
-  .operation-btn{
+
+.add-box {
+  .operation-btn {
     width: 100%;
     // padding: 0.75rem 1.25rem;
     display: flex;
@@ -693,25 +806,28 @@ const getUserData = () => {
     justify-content: space-around;
   }
 }
-.justify-center{
+
+.justify-center {
   display: flex;
   justify-content: center;
 }
-.fixed-width{
+
+.fixed-width {
   width: 100px;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis 
+  text-overflow: ellipsis
 }
 
-.add-card{
+.add-card {
   padding: 20px 0;
   text-align: center;
-  .add-btn{
+  .add-btn {
     margin: 35px auto 0;
   }
 }
-.col-warning{
+
+.col-warning {
   font-size: 20px;
   display: block;
   margin: 0 auto;
