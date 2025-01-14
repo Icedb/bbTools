@@ -1,79 +1,37 @@
-# electron-vite-vue
+# BB-Tools
 
-🥳 Really simple `Electron` + `Vue` + `Vite` boilerplate.
+崩崩数据分析工具，基于 Electron + Vite + Vue 3 构建，可在桌面端快速实现数据管理与可视化。
 
-<!-- [![awesome-vite](https://awesome.re/mentioned-badge.svg)](https://github.com/vitejs/awesome-vite) -->
-<!-- [![Netlify Status](https://api.netlify.com/api/v1/badges/ae3863e3-1aec-4eb1-8f9f-1890af56929d/deploy-status)](https://app.netlify.com/sites/electron-vite/deploys) -->
-<!-- [![GitHub license](https://img.shields.io/github/license/caoxiemeihao/electron-vite-vue)](https://github.com/electron-vite/electron-vite-vue/blob/main/LICENSE) -->
-<!-- [![GitHub stars](https://img.shields.io/github/stars/caoxiemeihao/electron-vite-vue?color=fa6470)](https://github.com/electron-vite/electron-vite-vue) -->
-<!-- [![GitHub forks](https://img.shields.io/github/forks/caoxiemeihao/electron-vite-vue)](https://github.com/electron-vite/electron-vite-vue) -->
-[![GitHub Build](https://github.com/electron-vite/electron-vite-vue/actions/workflows/build.yml/badge.svg)](https://github.com/electron-vite/electron-vite-vue/actions/workflows/build.yml)
-[![GitHub Discord](https://img.shields.io/badge/chat-discord-blue?logo=discord)](https://discord.gg/sRqjYpEAUK)
+## 功能
+- 团员信息文件一次性导入
+- 团本、团战数据可视化查看与导入
 
-## Features
+## 主要依赖
+- "electron": "^29.1.1"  
+- "electron-builder": "^24.13.3"  
+- "echarts": "^5.6.0"  
+- "element-plus": "^2.9.1"  
+- "vue": "^3.4.21"  
+- "vue-router": "^4.5.0"  
+- "vuex": "^4.1.0"  
+- 以及其他脚手架和工具
 
-📦 Out of the box  
-🎯 Based on the official [template-vue-ts](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-vue-ts), less invasive  
-🌱 Extensible, really simple directory structure  
-💪 Support using Node.js API in Electron-Renderer  
-🔩 Support C/C++ native addons  
-🖥 It's easy to implement multiple windows  
+## 使用说明
+1. 克隆项目：  
+   git clone
+2. 安装依赖：  
+   npm install
+3. 开发模式：  
+   npm run dev
+4. 构建打包：  
+   npm run build
+5. 预览：  
+   npm run preview
 
-## Quick Setup
+## 目录构成
+- src：前端源码（Vue 组件、路由等）
+- electron：Electron 主进程与预加载脚本
+- package.json：项目配置与依赖管理
 
-```sh
-# clone the project
-git clone https://github.com/electron-vite/electron-vite-vue.git
-
-# enter the project directory
-cd electron-vite-vue
-
-# install dependency
-npm install
-
-# develop
-npm run dev
-```
-
-## Debug
-
-![electron-vite-react-debug.gif](https://github.com/electron-vite/electron-vite-react/blob/main/electron-vite-react-debug.gif?raw=true)
-
-## Directory
-
-```diff
-+ ├─┬ electron
-+ │ ├─┬ main
-+ │ │ └── index.ts    entry of Electron-Main
-+ │ └─┬ preload
-+ │   └── index.ts    entry of Preload-Scripts
-  ├─┬ src
-  │ └── main.ts       entry of Electron-Renderer
-  ├── index.html
-  ├── package.json
-  └── vite.config.ts
-```
-
-<!--
-## Be aware
-
-🚨 By default, this template integrates Node.js in the Renderer process. If you don't need it, you just remove the option below. [Because it will modify the default config of Vite](https://github.com/electron-vite/vite-plugin-electron-renderer#config-presets-opinionated).
-
-```diff
-# vite.config.ts
-
-export default {
-  plugins: [
--   // Use Node.js API in the Renderer-process
--   renderer({
--     nodeIntegration: true,
--   }),
-  ],
-}
-```
--->
-
-## FAQ
-
-- [C/C++ addons, Node.js modules - Pre-Bundling](https://github.com/electron-vite/vite-plugin-electron-renderer#dependency-pre-bundling)
-- [dependencies vs devDependencies](https://github.com/electron-vite/vite-plugin-electron-renderer#dependencies-vs-devdependencies)
+## 许可证
+本项目使用 MIT 开源许可证，详细信息请查阅 LICENSE 文件。

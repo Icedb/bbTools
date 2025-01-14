@@ -13,9 +13,10 @@ const filePath = `${userData}\\serverData.json`
 // 默认服务器配置
 let serverList = [
   // { name: 'S1.2144一区（命运之轮）', value: 'hun01' },
-  { name: '混服', value: 'hun' },
+  { name: '混服S1', value: 'hun01' },
+  { name: '混服S2', value: 'hun02' },
   { name: '国服', value: 'gf01' },
-  { name: 'B服', value: 'bilibili' },
+  { name: 'B服', value: 'bilibili01' },
 ]
 
 // 判断文件是否存在
@@ -55,10 +56,10 @@ const getServerList = () => {
    }
  
    // console.log(req.body)
-   if (server) {
+   if (server && server.length > 0) {
     return server
    } else {
-    return []
+    return serverList
    }
 }
 
@@ -126,32 +127,37 @@ const loadExcelData = () => {
 }
 
 // 保存文件，调用showOpenDialogSync获取保存路径，然后将文件流写入
-const saveFile = (dataBuffer: Buffer, fileName: string, extensions: string[] | string) => {
-  try {
-    // 判断extensions是否为数组
-    if (!Array.isArray(extensions)) {
-      extensions = [extensions]
+const saveFile = (
+  dataBuffer: Buffer,
+  fileName: string,
+  extensions: string[] | string
+): Promise<void> => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!Array.isArray(extensions)) {
+        extensions = [extensions];
+      }
+      const filePaths = await dialog.showSaveDialog({
+        title: '保存文件',
+        defaultPath: fileName,
+        filters: [{ name: 'Excel', extensions }]
+      });
+      if (filePaths.canceled || !filePaths.filePath) {
+        return reject('canceled');
+      }
+      await fs.promises.writeFile(filePaths.filePath, dataBuffer);
+      resolve();
+    } catch (error) {
+      console.log(error);
+      reject(error);
     }
-    const filePaths = dialog.showSaveDialogSync({
-      title: '保存文件',
-      defaultPath: '团战数据',
-      filters: [
-        { name: 'Excel', extensions: extensions }
-      ]
-    })
-    // const fileName = '团战数据' + extensions[0]
-    const path = filePaths
-    return fs.writeFileSync(path, dataBuffer);
-  } catch (error) {
-    console.log(error)
-    return false
-  }
-}
+  });
+};
 
 // 保存excel
 const saveExcelData = (data: any, fileName: string) => {
   const buffer = saveExcel(data)
-  saveFile(buffer, fileName, ['xls', 'xlsx'])
+  return saveFile(buffer, fileName, ['xls', 'xlsx'])
 }
 
 export {

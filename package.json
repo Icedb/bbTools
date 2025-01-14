@@ -1,8 +1,8 @@
 {
   "name": "bb-tools",
-  "version": "0.1.5",
+  "version": "0.3.0",
   "main": "dist-electron/main/index.js",
-  "description": "蹦蹦团战分析工具",
+  "description": "崩崩数据分析工具",
   "author": "jcebd",
   "license": "MIT",
   "private": true,

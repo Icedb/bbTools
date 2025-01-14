@@ -1,39 +1,41 @@
 <template>
-  <div class="bg">
-    <div class="title-box">
-      <img src="@/assets/images/qiyana.png" alt="">
-      <h1>团战信息查询分析工具<span>v {{ version }}</span></h1>
-    </div>
-    <div class="main-box">
-      <!-- 使用帮助提示 -->
-      <p class="suggest">
-        欢迎使用，首次使用建议
-        <el-link @click="goto('/help')">查看使用帮助</el-link>
-        ，快速熟悉并使用本工具
-      </p>
-      <div class="select-server">
-        <h2>请选择所在服务器</h2>
-        <el-select
-          v-model="serverName"
-          class="m-2"
-          style="width: 300px;"
-          placeholder="Select"
-          size="large"
-          @change="changeServer"
-        >
-          <el-option
-            v-for="item in serverList"
-            :key="item.value"
-            :label="item.name"
-            :value="item.value"
-          />
-        </el-select>
+  <el-scrollbar>
+    <div class="bg">
+      <div class="title-box">
+        <img src="@/assets/images/qiyana.png" alt="">
+        <h1>团战信息查询分析工具<span>v {{ version }}</span></h1>
       </div>
+      <div class="main-box">
+        <!-- 使用帮助提示 -->
+        <p class="suggest">
+          欢迎使用，首次使用建议
+          <el-link @click="goto('/help')">查看使用帮助</el-link>
+          ，快速熟悉并使用本工具
+        </p>
+        <div class="select-server">
+          <h2>请选择所在服务器</h2>
+          <el-select
+            v-model="serverName"
+            class="m-2"
+            style="width: 300px;"
+            placeholder="Select"
+            size="large"
+            @change="changeServer"
+          >
+            <el-option
+              v-for="item in serverList"
+              :key="item.value"
+              :label="item.name"
+              :value="item.value"
+            />
+          </el-select>
+        </div>
+      </div>
+      <el-button type="primary" class="goto" size="large" @click="goto('/typeIn')">
+        前往数据管理
+      </el-button>
     </div>
-    <el-button type="primary" class="goto" size="large" @click="goto('/home')">
-      前往数据管理
-    </el-button>
-  </div>
+  </el-scrollbar>
 </template>
 
 <script setup lang="ts">
@@ -71,6 +73,7 @@ const receiveServerData = (event: any, server: Server[]) => {
   serverList.value = server
   if (!serverName.value) {
     serverName.value = serverList.value[0].value
+    changeServer()
   }
 }
 const getServer = () => {
@@ -99,7 +102,7 @@ const goto = (path: string) => {
 <style lang="scss" scoped>
 .title-box {
   width: 100%;
-  padding-top: 150px;
+  padding-top: 10%;
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -148,6 +151,6 @@ const goto = (path: string) => {
 }
 .goto {
   display: block;
-  margin: 160px auto 60px;
+  margin: 60px auto;
 }
 </style>

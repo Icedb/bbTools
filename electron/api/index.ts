@@ -5,7 +5,7 @@ const HEADERS = {
     "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) miHoYoBBS/2.11.1",
   Referer: "https://webstatic.mihoyo.com/",
   "x-rpc-app_version": "2.24.2",
-  "x-rpc-client_type": 5,
+  "x-rpc-client_type": "5",
   DS: "",
   Cookie: "",
 };
@@ -16,7 +16,6 @@ function getBBData(query, cookie) {
     // qs: query,
     headers: { ...HEADERS, DS: getDS(query), Cookie: cookie ? cookie : ''},
   }).then((res) => res.json());
-  console.log('getBBData-res', res)
   return res;
 }
 

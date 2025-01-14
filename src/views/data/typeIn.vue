@@ -27,8 +27,11 @@
             </el-icon></el-button>
         </div>
         <div>
-          <el-link type="primary" class="down-template" href="./src/assets/files/社团成员名单模板.xls" :icon="Download">下载成员名单模板</el-link>
-          <el-button type="primary" @click="uploadExcel" :icon="Upload">读取成员信息</el-button>
+          <el-link type="primary" class="down-template" @click="downloadTemplate" :icon="Download">下载成员名单模板</el-link>
+          <el-button type="primary" @click="uploadExcel" :icon="Upload">导入成员信息
+            <el-tooltip effect="light" content="下载名单模板，然后按照模板规则填写信息并导入" placement="top">
+          <el-icon size="18px"  class="right-icon" ><question-filled /></el-icon>
+        </el-tooltip></el-button>
         </div>
       </div>
       <el-row :gutter="20">
@@ -598,10 +601,11 @@ const uploadExcel = () => {
   });
 };
 
-
-
-
-
+// 下载模板
+const downloadTemplate = () => {
+  // 改为主进程下载
+  window.ipcRenderer.send('downloadTemplateFile');
+}
 
 
   // getUserGroupData({ userObj: groupList.value, server: serverName }).then((res: any) => {
@@ -622,216 +626,217 @@ const uploadExcel = () => {
   //   loading.close();
   // });
 </script>
-<style lang="scss" scoped>
+<style scoped lang="scss">
 .home-box {
   padding: 20px 50px 10px;
-}
 
-.flex-between{
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-}
-
-.title-box {
-  margin-bottom: 10px;
-  display: flex;
-  align-items: center;
-  h2 {
-    margin-right: 10px;
+  .flex-between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
-}
 
-.down-template{
-  margin-right: 10px;
-  margin-top: 12px;
-}
+  .right-icon {
+    margin-left: 4px;
+  }
 
-
-.group-title {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 10px;
-  margin-top: 20px;
-  margin-bottom: 10px;
-
-  .group-name {
+  .title-box {
+    margin-bottom: 10px;
     display: flex;
     align-items: center;
 
-    h3 {
-      max-width: 220px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      margin-right: 15px;
-    }
-  }
-}
-
-.list-group {
-  display: flex;
-  flex-direction: column;
-  padding-left: 0;
-  margin-bottom: 0;
-  border-radius: 5px;
-
-  .list-title {
-    width: 100%;
-    background: #fff;
-
-    .el-col {
-      border: 1px solid rgba(0, 0, 0, .125);
-
-      &+.el-col {
-        border-left-width: 0;
-      }
-
-      p {
-        height: 48px;
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        &.state {
-          font-size: 12px;
-        }
-      }
+    h2 {
+      margin-right: 10px;
     }
   }
 
-  .list-item {
-    background: #fff;
+  .down-template {
+    margin-right: 10px;
+    margin-top: 12px;
+  }
 
-    .rank-col {
-      cursor: move;
+  .group-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+
+    .group-name {
       display: flex;
       align-items: center;
-      justify-content: center;
-    }
 
-    .el-col {
-      border: 1px solid rgba(0, 0, 0, .125);
-      border-top-width: 0;
-      min-height: 49px;
-
-      &+.el-col {
-        border-left-width: 0;
-      }
-
-      p {
-        width: 100%;
-        height: 49px;
-        text-align: center;
-        line-height: 49px;
+      h3 {
+        max-width: 220px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        margin-right: 15px;
+      }
+    }
+  }
 
-        &.state {
-          font-size: 12px;
+  .list-group {
+    display: flex;
+    flex-direction: column;
+    padding-left: 0;
+    margin-bottom: 0;
+    border-radius: 5px;
+
+    .list-title {
+      width: 100%;
+      background: #fff;
+
+      .el-col {
+        border: 1px solid var(--el-border-color);
+
+        &+.el-col {
+          border-left-width: 0;
+        }
+
+        p {
+          height: 48px;
+          width: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          &.state {
+            font-size: 12px;
+          }
         }
       }
     }
 
+    .list-item {
+      background: #fff;
+
+      .rank-col {
+        cursor: move;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .el-col {
+        border: 1px solid var(--el-border-color);
+        border-top-width: 0;
+        min-height: 49px;
+
+        &+.el-col {
+          border-left-width: 0;
+        }
+
+        p {
+          width: 100%;
+          height: 49px;
+          text-align: center;
+          line-height: 49px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+
+          &.state {
+            font-size: 12px;
+          }
+        }
+      }
+
+      .operation-btn {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+      }
+    }
+
+    .operation-box {
+      .el-col {
+        border: 1px solid var(--el-border-color);
+        border-top-width: 0;
+        min-height: 50px;
+
+        &+.el-col {
+          border-left-width: 0;
+        }
+
+        input {
+          margin-left: 5px;
+          border: none;
+          height: 48px;
+          width: 93%;
+          outline: none;
+        }
+
+        .state {
+          width: 100%;
+          height: 50px;
+          text-align: center;
+          line-height: 50px;
+          white-space: nowrap;
+          font-size: 12px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .el-button+.el-button {
+          margin-left: 6px;
+        }
+      }
+    }
+  }
+
+  .modify-tip {
+    color: #f56c6c;
+  }
+
+  .list-add {
+    position: relative;
+    display: block;
+    background-color: #fff;
+    border: 1px solid var(--el-border-color);
+    border-top-width: 0;
+    height: 55px;
+    align-items: center;
+  }
+
+  .add-box {
     .operation-btn {
       width: 100%;
-      // padding: 0.75rem 1.25rem;
       display: flex;
       align-items: center;
       justify-content: space-around;
     }
   }
 
-  .operation-box {
-    .el-col {
-      border: 1px solid rgba(0, 0, 0, .125);
-      border-top-width: 0;
-      min-height: 50px;
+  .justify-center {
+    display: flex;
+    justify-content: center;
+  }
 
-      &+.el-col {
-        border-left-width: 0;
-      }
+  .fixed-width {
+    width: 100px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
-      input {
-        margin-left: 5px;
-        border: none;
-        height: 48px;
-        width: 93%;
-        // font-size: 12px;
-        outline: none;
-      }
+  .add-card {
+    padding: 20px 0;
+    text-align: center;
 
-      .state {
-        width: 100%;
-        height: 50px;
-        text-align: center;
-        line-height: 50px;
-        white-space: nowrap;
-        font-size: 12px;
-        overflow: hidden;
-        text-overflow: ellipsis
-      }
-
-      .el-button+.el-button {
-        margin-left: 6px;
-      }
+    .add-btn {
+      margin: 35px auto 0;
     }
   }
-}
 
-.modify-tip{
-  color: #f56c6c;
-}
-
-.list-add {
-  position: relative;
-  display: block;
-  background-color: #fff;
-  border: 1px solid rgba(0, 0, 0, .125);
-  border-top-width: 0;
-  height: 55px;
-  align-items: center;
-}
-
-.add-box {
-  .operation-btn {
-    width: 100%;
-    // padding: 0.75rem 1.25rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
+  .col-warning {
+    font-size: 20px;
+    display: block;
+    margin: 0 auto;
+    height: 50px;
+    line-height: 50px;
   }
-}
-
-.justify-center {
-  display: flex;
-  justify-content: center;
-}
-
-.fixed-width {
-  width: 100px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis
-}
-
-.add-card {
-  padding: 20px 0;
-  text-align: center;
-  .add-btn {
-    margin: 35px auto 0;
-  }
-}
-
-.col-warning {
-  font-size: 20px;
-  display: block;
-  margin: 0 auto;
-  height: 50px;
-  line-height: 50px;
 }
 </style>

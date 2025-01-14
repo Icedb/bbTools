@@ -4,11 +4,10 @@ const getBB = (query: any): Promise<any> => {
   return new Promise((resolve, reject) => {
     // 使用 once 而不是 on，避免多次触发
     try {
-      const result = window.ipcRenderer.sendSync('getBBData', query)
-      console.log('getBBData-result', result)
+      const cookie = window.localStorage.getItem('cookie')
+      const result = window.ipcRenderer.sendSync('getBBData', query, cookie)
       resolve(result)
     } catch (error) {
-      console.log('getBBData-error', error)
       reject(error)
     }
   })

@@ -8,10 +8,11 @@
       <el-menu-item index="#help1"><a href="#help1">一、选择社团所在服务器</a></el-menu-item>
       <el-menu-item index="#help2"><a href="#help2">二、输入cookie与分组成员信息</a></el-menu-item>
       <el-menu-item index="#help3"><a href="#help3">三、修改成员数据</a></el-menu-item>
-      <el-menu-item index="#help4"><a href="#help4">四、查看数据分析</a></el-menu-item>
+      <el-menu-item index="#help4"><a href="#help4">四、查看团战/团本数据分析</a></el-menu-item>
       <el-menu-item index="#help5"><a href="#help5">附录一 cookie的获取</a></el-menu-item>
       <el-menu-item index="#help6"><a href="#help6">附录二 常见问题</a></el-menu-item>
       <el-menu-item index="#help7"><a href="#help7">附录三 关于服务器选择</a></el-menu-item>
+      <el-menu-item index="#help8"><a href="#help7">附录四 问题反馈</a></el-menu-item>
       </el-menu>
       <!-- <section class="sidebar-group">
         <a href="#help1">一、选择社团所在服务器</a>
@@ -60,7 +61,7 @@
           :initial-index="2"
           fit="cover"
         />
-        <h2 id="help4">四、查看数据分析</h2>
+        <h2 id="help4">四、查看团战/团本数据分析</h2>
         <p>1. 数据分析分为文字信息与图表信息，各有分工</p>
         <p>2. 如果当前用户的文字信息不正确或报错，需要点击回 数据管理 页进行用户修改或数据重新获取等操作，保存后再次返回 数据分析 页查看</p>
         <p>3. </p>
@@ -138,6 +139,8 @@
         />
         <h2 id="help7">附录三 关于服务器选择</h2>
         <p>目前只做了混服的原2144和国服，因为获取服务器标识需要相应服务器的账号，所以其他服务器信息暂未收录，如果需求大后续版本会加进去</p>
+        <h2 id="help8">附录四 问题反馈</h2>
+        <p>如果加了好友请直接发消息，如果没有好友请发送邮件至：bbtools@126.com</p>
 
       </div>
       </el-scrollbar>
@@ -184,6 +187,9 @@ const activeIndex = ref('#help1')
     text-decoration: initial;
     color: var(--brand-color);
   }
+}
+h2{
+  margin: 10px 0;
 }
 p{
   font-size: 18px;

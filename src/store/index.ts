@@ -5,7 +5,7 @@ export default createStore({
   state: {
     cookie: '',
     teamName: "",
-    serverName: "hun01"
+    serverName: ""
   },
   mutations: {
     cookie: (state, newValue) => {

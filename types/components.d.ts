@@ -8,7 +8,6 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     Echarts: typeof import('./../src/components/echarts.vue')['default']
-    EchartsBar: typeof import('./../src/components/echarts-bar.vue')['default']
     ElAffix: typeof import('element-plus/es')['ElAffix']
     ElAside: typeof import('element-plus/es')['ElAside']
     ElButton: typeof import('element-plus/es')['ElButton']
@@ -37,6 +36,8 @@ declare module 'vue' {
     Layout: typeof import('./../src/components/layout.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    UserEchart: typeof import('./../src/components/userEchart.vue')['default']
+    UserInfo: typeof import('./../src/components/userInfo.vue')['default']
   }
   export interface ComponentCustomProperties {
     vLoading: typeof import('element-plus/es')['ElLoadingDirective']
