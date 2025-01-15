@@ -27,7 +27,7 @@
         ]
       }
     ],
-    "artifactName": "${productName}-Windows-${version}-Setup.${ext}"
+    "artifactName": "${productName}安装包_${version}.${ext}"
   },
   "nsis": {
     "oneClick": false,

@@ -31,7 +31,7 @@ import {
 } from "@element-plus/icons-vue";
 import userInfo from '@/components/userInfo.vue';
 import userEchart from '@/components/userEchart.vue';
-import { levelLetter, formatTime, contributeCompute } from '@/utils/index'
+import { handleExcelData } from '@/utils/index'
 
 import { GroupItem, BattleInfo } from '@/types/analysis'
 
@@ -96,47 +96,8 @@ const getMapInfo = (historyObj: BattleInfo) => {
 
 const downloadDataToExcel = () => {
   // 后期优化：数据层数太多，不好判断是否有数据，需要增加一个判断
-  let teamName = ''
   if (groupList.value && groupList.value.length > 0) {
-    const data = groupList.value.map((group) => {
-      let headerArr = ['昵称']
-      let headerNum = 0
-      let groupData = group.group.map((people) => {
-        const historyObj = people.profile?.level_info?.history || []
-        if (!teamName) {
-          teamName = people.profile?.name || ''
-        }
-        if (historyObj.length) {
-          let historyData = [people.name]
-
-          for (let i=0; i<historyObj.length-1; i++) {
-            let history = historyObj[i]
-            if (headerNum <= i) {
-              headerArr.push('进点时间', '所进关卡', '通关时间', '同步率')
-            }
-            headerNum++
-            // 设置颜色
-            historyData.push(
-              formatTime(history.enter_time - startTime.value),
-              levelLetter[history.level_id],
-              history.pass_time + '秒',
-              contributeCompute(history.contribute_rate) + '%'
-            )
-          }
-          return historyData.flat()
-        } else {
-          return [people.name, '暂无数据']
-        }
-      })
-      groupData.unshift(headerArr)
-      return {
-        name: group.groupName,
-        data: groupData
-      }
-    })
-    // 名字
-    let name = `${teamName}${mapName.value}团本数据`
-    // 通过saveExcel
+    const {data, name} = handleExcelData(groupList.value, startTime.value)
     window.ipcRenderer.send('saveExcel', data, name)
   }
 }

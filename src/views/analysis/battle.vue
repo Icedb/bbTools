@@ -44,9 +44,9 @@ import {
 } from "@element-plus/icons-vue";
 import userInfo from '@/components/userInfo.vue';
 import userEchart from '@/components/userEchart.vue';
-import { battleLetter, formatTime, contributeCompute } from '@/utils/index'
+import { handleExcelData } from '@/utils/index'
 
-import { GroupItem, HistoryArrItem, ChartOptionItem, BattleInfo } from '@/types/analysis'
+import { GroupItem, HistoryArrItem, BattleInfo } from '@/types/analysis'
 
 // ========== 生命周期和变量 ==========
 const groupList = ref<GroupItem[]>()
@@ -152,42 +152,7 @@ const getMapInfo = (historyObj: BattleInfo) => {
 const downloadDataToExcel = () => {
   // 后期优化：数据层数太多，不好判断是否有数据，需要增加一个判断
   if (groupList.value && groupList.value.length > 0) {
-    const data = groupList.value.map((group) => {
-      let headerArr = ['昵称']
-      let headerNum = 0
-      let groupData = group.group.map((people) => {
-        const historyObj = people.profile?.battle_info?.history[historyId.value] || { history: [] }
-        if (historyObj?.history?.length) {
-          let historyData = [people.name]
-
-          for (let i=0; i<historyObj.history.length-1; i++) {
-            let history = historyObj.history[i]
-            if (headerNum <= i) {
-              headerArr.push('进点时间', '所进关卡', '通关时间', '同步率')
-            }
-            headerNum++
-            // 设置颜色
-            historyData.push(
-              formatTime(history.enter_time - startTime.value),
-              battleLetter[history.level_id],
-              history.pass_time + '秒',
-              contributeCompute(history.contribute_rate) + '%'
-            )
-          }
-          return historyData.flat()
-        } else {
-          return [people.name, '暂无数据']
-        }
-      })
-      groupData.unshift(headerArr)
-      return {
-        name: group.groupName,
-        data: groupData
-      }
-    })
-    // 名字
-    let name = `${redSquare.value} VS ${blueSquare.value} ${mapName.value}团战数据`
-    // 通过saveExcel
+    const {data, name} = handleExcelData(groupList.value, startTime.value, historyId.value)
     window.ipcRenderer.send('saveExcel', data, name)
   }
 }

@@ -4,7 +4,9 @@
       <el-affix>
         <div class="affix">
           <div class="affix-left">
-            <img src="@/assets/images/qiyana.png" alt="返回首页" class="affix-logo" @click="goto">
+            <el-tooltip effect="light" content="返回首页" placement="right">
+              <img src="@/assets/images/qiyana.png" alt="返回首页" class="affix-logo" @click="goto">
+            </el-tooltip>
             <el-carousel height="40px" direction="vertical" :interval="10000" indicator-position='none'
               class="tips hidden-sm-and-down">
               <el-carousel-item v-for="item in tipText" :key="item">
@@ -15,10 +17,18 @@
           <div class="affix-right">
             <el-menu class="el-menu-demo" mode="horizontal" :ellipsis='false' background-color="#545c64" text-color="#fff"
               :default-active='activeIndex' router active-text-color="#ffd04b">
-              <el-menu-item index="/typeIn">数据管理</el-menu-item>
-              <el-menu-item index="/battle">团战分析</el-menu-item>
-              <el-menu-item index="/level">团本分析</el-menu-item>
-              <el-menu-item index="/help">帮助</el-menu-item>
+              <el-menu-item index="/typeIn">
+                <el-icon :size="14"><Odometer /></el-icon>
+                数据管理</el-menu-item>
+              <el-menu-item index="/battle">
+                <el-icon :size="14"><PieChart /></el-icon>
+                团战分析</el-menu-item>
+              <el-menu-item index="/level">
+                <el-icon :size="14"><DataLine /></el-icon>
+                团本分析</el-menu-item>
+              <el-menu-item index="/help">
+                <el-icon :size="14"><Help /></el-icon>
+                帮助</el-menu-item>
             </el-menu>
             <img @click="toGit" src="@/assets/images/github.png" alt="github" class="github" />
           </div>
@@ -35,46 +45,43 @@
   </el-container>
 </template>
 
-<script lang="ts">
-import router from '@/router';
-import { Money } from "@element-plus/icons-vue";
+<script setup lang="ts">
+import { defineOptions, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import router from '@/router'
+import { PieChart, Odometer, DataLine, Help } from '@element-plus/icons-vue'
 
-import { defineComponent, ref, watch } from "vue";
-export default defineComponent({
-  name: "Layout",
-  components: {
-    Money
-  },
-  setup() {
-    const version = __APP_VERSION__
-    const tipText = ref([
-      '本工具旨在于帮助提升团员打团效率，请勿过度责怪团员',
-      '和我打一辈子崩崩吧，我什么都会做的',
-      '恢复全勤实物奖励！！！',
-      '广告位招租'
-    ])
-    const activeIndex = ref('')
-    const goto = function () {
-      router.push('/')
-    }
-    const route = useRoute()
-    watch(() => route.path, (to) => {
-      activeIndex.value = to
-    })
-    const toGit = function () {
-      // 调用浏览器打开链接
-      window.open('https://github.com/Icedb/bbTools')
-    }
-    return {
-      goto,
-      toGit,
-      version,
-      tipText,
-      activeIndex
-    }
-  }
+defineOptions({
+  name: 'Layout'
 })
+
+const version = __APP_VERSION__
+
+const tipText = ref([
+  '本工具旨在于帮助提升团员打团效率，请勿过度责怪团员',
+  '和我打一辈子崩崩吧，我什么都会做的',
+  '恢复全勤实物奖励！！！',
+  '广告位招租'
+])
+
+const activeIndex = ref('')
+
+const route = useRoute()
+
+watch(
+  () => route.path,
+  (to) => {
+    activeIndex.value = to
+  }
+)
+
+function goto() {
+  router.push('/')
+}
+
+function toGit() {
+  window.open('https://github.com/Icedb/bbTools')
+}
 </script>
 
 <style lang="scss" scoped>

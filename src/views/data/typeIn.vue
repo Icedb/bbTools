@@ -29,7 +29,7 @@
         <div>
           <el-link type="primary" class="down-template" @click="downloadTemplate" :icon="Download">下载成员名单模板</el-link>
           <el-button type="primary" @click="uploadExcel" :icon="Upload">导入成员信息
-            <el-tooltip effect="light" content="下载名单模板，然后按照模板规则填写信息并导入" placement="top">
+            <el-tooltip effect="light" content="下载名单模板，然后按照帮助：二-4 填写信息并导入" placement="top">
           <el-icon size="18px"  class="right-icon" ><question-filled /></el-icon>
         </el-tooltip></el-button>
         </div>

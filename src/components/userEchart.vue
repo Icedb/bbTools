@@ -137,7 +137,7 @@ const graphic = [{
       top: 'center',
       z: 100,
       shape: {
-        width: 100,
+        width: 200,
         height: 30
       },
       style: {
@@ -151,7 +151,7 @@ const graphic = [{
       z: 100,
       style: {
         fill: '#fff',
-        text: 'BBTools',
+        text: 'BBTools：请勿过度责怪团员',
         font: 'bold 14px sans-serif'
       }
     }
@@ -317,7 +317,6 @@ const showBarChart = (res: GroupItem) => {
 
 // 折线图
 const showLineChart = (res: GroupItem) => {
-
   const lineTooltip = {
     trigger: 'axis',
     formatter(params: any) {
@@ -367,7 +366,12 @@ const showLineChart = (res: GroupItem) => {
       max: 11,
       axisLabel: {
         formatter(value: number) {
-          const dataMap = ['', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K']
+          let dataMap = []
+          if (props.groupType === 'battle') {
+            dataMap = ['', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K']
+          } else {
+            dataMap = ['', '1', '2', '3', '4', '5', '6', '7']
+          }
           return dataMap[value] || ''
         }
       }
@@ -389,9 +393,10 @@ const showLineChart = (res: GroupItem) => {
     if (historyObj.history && historyObj?.history.length > 0) {
       for (const historyData of historyObj?.history) {
         const level_id = letter.value[historyData.level_id]
+        let yValue = props.groupType === 'battle' ? level_id.charCodeAt(0) - 64 : Number(level_id)
         line.push({
           name: level_id,
-          value: [historyData.enter_time - props.startTime, level_id.charCodeAt(0) - 64],
+          value: [historyData.enter_time - props.startTime, yValue],
           contribute_rate: historyData.contribute_rate,
           enter_time: historyData.enter_time - props.startTime,
           pass_time: historyData.pass_time
