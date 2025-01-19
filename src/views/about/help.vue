@@ -12,7 +12,8 @@
       <el-menu-item index="#help5"><a href="#help5">附录一 cookie的获取</a></el-menu-item>
       <el-menu-item index="#help6"><a href="#help6">附录二 常见问题</a></el-menu-item>
       <el-menu-item index="#help7"><a href="#help7">附录三 关于服务器选择</a></el-menu-item>
-      <el-menu-item index="#help8"><a href="#help7">附录四 问题反馈</a></el-menu-item>
+      <el-menu-item index="#help8"><a href="#help8">附录四 问题反馈</a></el-menu-item>
+      <el-menu-item index="#help9"><a href="#help9">附录五 更新相关</a></el-menu-item>
       </el-menu>
       <!-- <section class="sidebar-group">
         <a href="#help1">一、选择社团所在服务器</a>
@@ -142,7 +143,9 @@
         <p>目前只做了混服的原2144和国服，因为获取服务器标识需要相应服务器的账号，所以其他服务器信息暂未收录，如果需求大后续版本会加进去</p>
         <h2 id="help8">附录四 问题反馈</h2>
         <p>如果加了好友请直接发消息，如果没有好友请发送邮件至：bbtools@126.com</p>
-
+        <h2 id="help9">附录五 更新相关</h2>
+        <p>1. 页面右下角检查更新按钮可以查看最新版本，但由于接口为免费接口，存在调用上限，故偶尔会达到上线而失效，此时建议自行去github仓库查看</p>
+        <p>2. 更新的地址也是github仓库的发行地址，如果打不开建议使用github文件加速等方法(例：https://gh.api.99988866.xyz/)</p>
       </div>
       </el-scrollbar>
     </el-main>

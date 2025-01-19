@@ -40,17 +40,25 @@
     </el-main>
     <el-footer class="footer">
       <p> 个人闲暇时间制作，有问题请发送至：bbtools@126.com <span class="by-line">(改不改不一定)</span></p>
-      <p class="by">v {{ version }}</p>
+      <p class="by">v {{ version }} 
+        <el-button size="small" link type="primary" @click="checkUpdate" v-if="!isUpdate">检查更新</el-button>
+        <el-button size="small" link type="success" v-if="isUpdate && isUpdate.code === 0" @click="showUpdateMessage">有新版本</el-button>
+        <el-text size="small" link type="info" v-if="isUpdate && isUpdate.code === 1" >已是最新版本</el-text>
+      </p>
     </el-footer>
   </el-container>
 </template>
 
 <script setup lang="ts">
-import { defineOptions, ref, watch } from 'vue'
+import { defineOptions, ref, watch, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import router from '@/router'
+import { ElLoading, ElMessageBox, ElMessage } from 'element-plus'
 import { PieChart, Odometer, DataLine, Help } from '@element-plus/icons-vue'
-
+// vuex
+import { useStore } from 'vuex'
+import { updateToGithub } from '@/utils/update'
+const store = useStore()
 defineOptions({
   name: 'Layout'
 })
@@ -81,6 +89,58 @@ function goto() {
 
 function toGit() {
   window.open('https://github.com/Icedb/bbTools')
+}
+const isUpdate = computed(() => store.state.isUpdate) // 0: 未检查或报错 1: 有新版本 2: 无新版本
+
+function showUpdateMessage() {
+  // body做处理，在;或；后面加<br>
+  const body = isUpdate.value.body.replace(/;/g, ';<br />').replace(/；/g, '；<br />')
+  ElMessageBox({
+    title: '有新版本' + isUpdate.value.version,
+    dangerouslyUseHTMLString: true,
+    message: body,
+    showCancelButton: true,
+    confirmButtonText: '前往下载',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(() => {
+    window.open(isUpdate.value.downloadUrl)
+  }).catch(() => {
+    // console.log('取消')
+  })
+}
+
+async function checkUpdate() {
+  // 修改vuex中的isUpdate
+  ElLoading.service({
+    lock: true,
+    text: '检查更新中...',
+    background: 'rgba(0, 0, 0, 0.7)'
+  })
+  try {
+    const result = await updateToGithub()
+    ElLoading.service().close()
+    if (!result) {
+      // 检查失败
+      store.dispatch('setIsUpdate', 0)
+      ElMessage({
+        message: '检查失败，请稍后重试',
+        type: 'error'
+      });
+      return
+    }
+    store.dispatch('setIsUpdate', result)
+    if (result.code === 0) {
+      showUpdateMessage()
+    }
+  } catch (error) {
+    ElMessage({
+      message: '检查失败，请稍后重试',
+      type: 'error'
+    });
+    ElLoading.service().close()
+  }
+
 }
 </script>
 

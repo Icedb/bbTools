@@ -70,68 +70,70 @@
                   </el-col>
                 </el-row>
               </div>
-              <draggable group="people" itemKey="name" handle=".rank-col" @start="startDrag" @add="addDrag">
-                <template v-for="(element, index) in item.group" :key="index">
-                  <div v-if="element.hasEdit == 0">
-                    <el-row align="middle" class="list-item">
-                      <el-col :span="2" class="rank-col">
-                        <el-icon>
-                          <expand />
-                        </el-icon>
-                      </el-col>
-                      <el-col :span="6">
-                        <p>{{ element.name }}</p>
-                      </el-col>
-                      <el-col :span="7">
-                        <p>{{ element.uid }}</p>
-                      </el-col>
-                      <el-col :span="2">
-                        <p class="state" v-if="!element.profile && !element.message">未获取</p>
-                        <p class="state" v-else-if="element.profile && !element.message">已获取</p>
-                        <el-tooltip class="box-item" effect="light" :content="element.message || '数据异常'" placement="top"
-                          v-else>
-                          <el-icon color="#f56c6c" class="col-warning">
-                            <warning />
+              <draggable group="people" itemKey="uid" handle=".rank-col" @start="startDrag" @add="addDrag" :list="item.group">
+                <transition-group>
+                  <template v-for="(element, index) in item.group" :key="index">
+                    <div v-if="element.hasEdit == 0">
+                      <el-row align="middle" class="list-item">
+                        <el-col :span="2" class="rank-col">
+                          <el-icon>
+                            <expand />
                           </el-icon>
-                        </el-tooltip>
-                      </el-col>
-                      <el-col :span="7" class="operation-btn">
-                        <el-tooltip class="box-item" effect="light" content="单独获取本成员数据" placement="top">
-                          <el-icon @click="refreshPeople(element)" style="cursor: pointer">
-                            <refresh />
+                        </el-col>
+                        <el-col :span="6">
+                          <p>{{ element.name }}</p>
+                        </el-col>
+                        <el-col :span="7">
+                          <p>{{ element.uid }}</p>
+                        </el-col>
+                        <el-col :span="2">
+                          <p class="state" v-if="!element.profile && !element.message">未获取</p>
+                          <p class="state" v-else-if="element.profile && !element.message">已获取</p>
+                          <el-tooltip class="box-item" effect="light" :content="element.message || '数据异常'" placement="top"
+                            v-else>
+                            <el-icon color="#f56c6c" class="col-warning">
+                              <warning />
+                            </el-icon>
+                          </el-tooltip>
+                        </el-col>
+                        <el-col :span="7" class="operation-btn">
+                          <el-tooltip class="box-item" effect="light" content="单独获取本成员数据" placement="top">
+                            <el-icon @click="refreshPeople(element)" style="cursor: pointer">
+                              <refresh />
+                            </el-icon>
+                          </el-tooltip>
+  
+                          <el-icon @click="editPeople(gIndex, index)" style="cursor: pointer"><edit-pen /></el-icon>
+                          <el-icon @click="deletePeople(gIndex, index, element.name)"
+                            style="cursor: pointer"><delete-filled /></el-icon>
+                        </el-col>
+                      </el-row>
+                    </div>
+                    <div v-else class="operation-box">
+                      <el-row align="middle">
+                        <el-col :span="2" class="rank-col">
+                          <el-icon>
+                            <expand />
                           </el-icon>
-                        </el-tooltip>
-
-                        <el-icon @click="editPeople(gIndex, index)" style="cursor: pointer"><edit-pen /></el-icon>
-                        <el-icon @click="deletePeople(gIndex, index, element.name)"
-                          style="cursor: pointer"><delete-filled /></el-icon>
-                      </el-col>
-                    </el-row>
-                  </div>
-                  <div v-else class="operation-box">
-                    <el-row align="middle">
-                      <el-col :span="2" class="rank-col">
-                        <el-icon>
-                          <expand />
-                        </el-icon>
-                      </el-col>
-                      <el-col :span="6">
-                        <input type="text" v-model="nowPeopleName" placeholder="请输入昵称">
-                      </el-col>
-                      <el-col :span="7">
-                        <input type="number" v-model="nowPeopleUid" placeholder="请输入uid">
-                      </el-col>
-                      <el-col :span="2">
-                        <p class="state">状态</p>
-                      </el-col>
-                      <el-col :span="7">
-                        <el-button type="warning" size="small" @click="cancelEdit(gIndex, index)">取消</el-button>
-                        <el-button type="primary" size="small" @click="saveEdit(gIndex, index)">保存</el-button>
-                      </el-col>
-                    </el-row>
-                  </div>
-
-                </template>
+                        </el-col>
+                        <el-col :span="6">
+                          <input type="text" v-model="nowPeopleName" placeholder="请输入昵称">
+                        </el-col>
+                        <el-col :span="7">
+                          <input type="number" v-model="nowPeopleUid" placeholder="请输入uid">
+                        </el-col>
+                        <el-col :span="2">
+                          <p class="state">状态</p>
+                        </el-col>
+                        <el-col :span="7">
+                          <el-button type="warning" size="small" @click="cancelEdit(gIndex, index)">取消</el-button>
+                          <el-button type="primary" size="small" @click="saveEdit(gIndex, index)">保存</el-button>
+                        </el-col>
+                      </el-row>
+                    </div>
+  
+                  </template>
+                </transition-group>
               </draggable>
               <div class="add-box">
                 <div class="list-add justify-center" v-if="item.hasAdd == 0">
@@ -294,6 +296,8 @@ onBeforeRouteLeave((to, from, next) => {
  */
 // 保存groupList数据
 const saveGroupAndEditChart = () => {
+  console.log('保存数据');
+  console.log(groupList.value);
   try {
     window.localStorage.setItem('groupData', JSON.stringify(groupList.value));
     isModify.value = false;

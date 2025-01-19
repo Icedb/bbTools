@@ -1,11 +1,11 @@
-// 这里跟vue2有点区别，vue2中是直接导入vue，然后通过vue.use(xxx)
 import { createStore } from 'vuex'
 
 export default createStore({
   state: {
     cookie: '',
     teamName: "",
-    serverName: ""
+    serverName: "",
+    isUpdate: null
   },
   mutations: {
     cookie: (state, newValue) => {
@@ -17,6 +17,9 @@ export default createStore({
     serverName: (state, newValue) => {
       state.serverName = newValue
     },
+    isUpdate: (state, newValue) => {
+      state.isUpdate = newValue
+    },
   },
   actions: {
     setCookie: (ctx, value) => {
@@ -27,6 +30,9 @@ export default createStore({
     },
     setServerName: (ctx, value) => {
       ctx.commit('serverName', value)
+    },
+    setIsUpdate: (ctx, value) => {
+      ctx.commit('isUpdate', value)
     },
   }
 })

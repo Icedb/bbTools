@@ -88,7 +88,7 @@ const historyArr = ref<HistoryArrItem[]>([])
 const getHistoryArr = () => {
   // 类似获取地图信息，获取的是第一个角色的团战数据
   if (groupList.value && groupList.value.length > 0) {
-    const historyObj = groupList.value[0].group[0].profile?.battle_info?.history || []
+    const historyObj = groupList.value[0].group[0]?.profile?.battle_info?.history || []
     for (let i = 0; i < historyObj.length; i++) {
       let name = historyObj[i].name1 + ' VS ' + historyObj[i].name2
       historyArr.value.push({
