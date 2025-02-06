@@ -8,7 +8,7 @@
               <p>{{ mapName }}</p>
               <el-link type="primary" @click="downloadDataToExcel" :icon="Download">下载团本数据</el-link>
             </div>
-            <img :src="mapUrl" alt="团战地图" style="width:100%;" v-show="mapUrl">
+            <img :src="mapUrl" alt="团本地图" style="width:100%;" v-show="mapUrl">
           </div>
         </el-col>
         <el-col :lg="13" :xs="24">
@@ -20,7 +20,7 @@
     </div>
   </el-scrollbar>
 
-  <!-- <div class="fixed-bug" @click="solveTimeBug">起 始</div> -->
+  <div class="fixed-bug" @click="solveTimeBug">起 始</div>
 </template>
 
 <script setup lang="ts">

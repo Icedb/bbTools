@@ -2,15 +2,23 @@
 
 const getBB = (query: any): Promise<any> => {
   return new Promise((resolve, reject) => {
-    // 使用 once 而不是 on，避免多次触发
-    try {
-      const cookie = window.localStorage.getItem('cookie')
-      const result = window.ipcRenderer.sendSync('getBBData', query, cookie)
-      resolve(result)
-    } catch (error) {
-      reject(error)
-    }
-  })
+    const cookie = window.localStorage.getItem('cookie');
+    
+    // 生成一个唯一的消息ID
+    const messageId = `getBBData-${Math.random()}-${Date.now()}`;
+
+    // 监听主进程的响应
+    window.ipcRenderer.once(messageId, (event, result) => {
+      if (result.error) {
+        reject(result.error);
+      } else {
+        resolve(result.data);
+      }
+    });
+
+    // 发送消息到主进程
+    window.ipcRenderer.send('getBBData', messageId, query, cookie);
+  });
 }
 
 interface PostData {

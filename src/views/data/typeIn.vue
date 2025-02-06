@@ -504,7 +504,7 @@ const getUserGroupData = async () => {
     fullLoading.value = false;
     cookieDisabled.value = true
 
-    ElMessage({ type: 'success', message: '获取成功，请前往图表分析查看' });
+    ElMessage({ type: 'success', message: '获取成功，请保存后前往图表分析查看' });
   }).catch(() => {
     fullLoading.value = false;
   });

@@ -33,7 +33,7 @@
     </div>
   </el-scrollbar>
 
-  <!-- <div class="fixed-bug" @click="solveTimeBug">起 始</div> -->
+  <div class="fixed-bug" @click="solveTimeBug">起 始</div>
 </template>
 
 <script setup lang="ts">

@@ -176,9 +176,14 @@ ipcMain.on('getServer', (event, arg) => {
 })
 
 // 获取蹦蹦数据
-ipcMain.on('getBBData', async (event, arg, cookie) => {
-  const data = await getBBData(arg, cookie);
-  event.returnValue = data;
+ipcMain.on('getBBData', async (event, messageId, arg, cookie) => {
+  try {
+    const data = await getBBData(arg, cookie);
+    // event.returnValue = data;
+    event.reply(messageId, { data });
+  } catch (error) {
+    event.reply(messageId, { error });
+  }
 })
 
 // 加载本地excel
