@@ -51,7 +51,7 @@ const indexHtml = path.join(RENDERER_DIST, 'index.html')
 
 async function createWindow() {
   win = new BrowserWindow({
-    title: '蹦蹦团战工具',
+    title: '崩崩团战工具',
     width: 1200,
     height: 800,
     minWidth: 1000,
@@ -175,7 +175,7 @@ ipcMain.on('getServer', (event, arg) => {
   event.reply('getServer-reply', serverList)
 })
 
-// 获取蹦蹦数据
+// 获取崩崩数据
 ipcMain.on('getBBData', async (event, messageId, arg, cookie) => {
   try {
     const data = await getBBData(arg, cookie);
