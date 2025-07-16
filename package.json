@@ -1,6 +1,6 @@
 {
   "name": "bb-tools",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "main": "dist-electron/main/index.js",
   "description": "崩崩数据分析工具",
   "author": "jcebd",

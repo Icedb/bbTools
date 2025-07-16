@@ -27,6 +27,7 @@
               :key="item.value"
               :label="item.name"
               :value="item.value"
+              v-show="item.display"
             />
           </el-select>
         </div>
@@ -49,6 +50,7 @@ import router from '@/router'
 interface Server {
   name: string
   value: string
+  display: Boolean
 }
 
 /* 从全局 store 中获取版本信息 */

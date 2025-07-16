@@ -193,7 +193,9 @@ ipcMain.on('loadExcel', (event, arg) => {
   // console.log(data)
   // event.reply('loadExcel-reply', result)
   event.returnValue = data
-  sendMsg(win, '加载完成，数据已替换', 'success')
+  if (data && data.length > 0) {
+    sendMsg(win, '加载完成，数据已替换', 'success')
+  }
 })
 
 // 保存excel

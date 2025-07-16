@@ -125,7 +125,7 @@
                         <el-col :span="2">
                           <p class="state">状态</p>
                         </el-col>
-                        <el-col :span="7">
+                        <el-col :span="7" class="operation-btn">
                           <el-button type="warning" size="small" @click="cancelEdit(gIndex, index)">取消</el-button>
                           <el-button type="primary" size="small" @click="saveEdit(gIndex, index)">保存</el-button>
                         </el-col>
@@ -198,6 +198,19 @@
           <Delete />
         </el-icon>清空已获取数据</el-button>
     </div>
+    <!-- 离开页面确认对话框 -->
+    <el-dialog v-model="showLeaveDialog" title="警告" width="410px" align-center>
+      <p class="dialog-content">
+        <el-icon size="24" class="dialog-icon"><WarningFilled /></el-icon>
+        当前信息未保存，离开此页面将不做保存，是否离开？</p>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="showLeaveDialog = false">取消</el-button>
+          <el-button type="warning" @click="saveAndConfirm">保存并离开</el-button>
+          <el-button type="primary" @click="confirmLeave">离开</el-button>
+        </div>
+      </template>
+    </el-dialog>
   </el-scrollbar>
 </template>
 
@@ -229,7 +242,8 @@ import {
   Close,
   Refresh,
   Expand,
-  Warning
+  Warning,
+  WarningFilled
 } from "@element-plus/icons-vue";
 import type { FormInstance } from 'element-plus';
 
@@ -255,7 +269,8 @@ const cookieDisabled = ref(false);
 const cookie = ref('');
 const fullLoading = ref(false);
 
-
+const showLeaveDialog = ref(false);
+let pendingNavigation: any = null;
 
 /**
  * 生命周期钩子
@@ -281,15 +296,28 @@ onBeforeRouteLeave((to, from, next) => {
     next();
     return;
   }
-  ElMessageBox.confirm('当前信息未保存，离开此页面将不做保存，是否离开？', 'Warning', {
-    title: '警告',
-    confirmButtonText: '离开',
-    cancelButtonText: '取消',
-    type: 'warning',
-  })
-    .then(() => next())
-    .catch(() => { });
+  pendingNavigation = next;
+  showLeaveDialog.value = true;
 });
+
+// 保存并离开页面
+const saveAndConfirm = () => {
+  showLeaveDialog.value = false;
+  saveGroupAndEditChart();
+  if (pendingNavigation) {
+    pendingNavigation();
+    pendingNavigation = null;
+  }
+}
+
+// 确认离开页面
+const confirmLeave = () => {
+  showLeaveDialog.value = false;
+  if (pendingNavigation) {
+    pendingNavigation();
+    pendingNavigation = null;
+  }
+};
 
 /**
  * 方法逻辑
@@ -462,7 +490,9 @@ const refreshPeople = (
       fullLoading.value = false;
       userData.message = error.message;
       userData.profile = '';
-      ElMessage({ type: 'error', message: error.message });
+      if (error !== 'cancel') {
+        ElMessage({ type: 'error', message: error.message });
+      }
      });
 };
 
@@ -747,12 +777,12 @@ const downloadTemplate = () => {
         }
       }
 
-      .operation-btn {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: space-around;
-      }
+    }
+    .operation-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
     }
 
     .operation-box {
@@ -842,5 +872,20 @@ const downloadTemplate = () => {
     height: 50px;
     line-height: 50px;
   }
+
+  .dialog-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
 }
+
+  .dialog-content{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    .dialog-icon{
+      color: var(--el-color-warning);
+    }
+  }
 </style>

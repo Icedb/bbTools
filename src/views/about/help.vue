@@ -140,12 +140,14 @@
           fit="cover"
         />
         <h2 id="help7">附录三 关于服务器选择</h2>
-        <p>目前只做了混服的原2144和国服，因为获取服务器标识需要相应服务器的账号，所以其他服务器信息暂未收录，如果需求大后续版本会加进去</p>
+        <p>1. 目前只做了混服的原2144和国服与UC服，因为获取服务器标识需要相应服务器的账号，所以其他服务器信息(当乐、B服)不一定准确，如果需求大后续版本会加进去</p>
+        <p>2. 自定义服务器方式：首先需要获取到自定义服务器的标识，之后打开C盘：<span>C:\Users\电脑用户名\AppData\Roaming\bb-tools</span>，下有个serverData.json文件，
+          记事本打开后在文件的第4行添加: <span>{"name": "服务器名","value": "服务器标识"},</span>注意别忘了逗号，然后重启项目即可，如果修改出错或者有bug，删除这个文件即可，重新打开项目会再新建一个</p>
         <h2 id="help8">附录四 问题反馈</h2>
         <p>如果加了好友请直接发消息，如果没有好友请发送邮件至：bbtools@126.com</p>
         <h2 id="help9">附录五 更新相关</h2>
         <p>1. 页面右下角检查更新按钮可以查看最新版本，但由于接口为免费接口，存在调用上限，故偶尔会达到上线而失效，此时建议自行去github仓库查看</p>
-        <p>2. 更新的地址也是github仓库的发行地址，如果打不开建议使用github文件加速等方法(例：https://gh.api.99988866.xyz/)</p>
+        <p>2. 更新的地址也是github仓库的发行地址，如果打不开建议使用github文件加速等方法</p>
       </div>
       </el-scrollbar>
     </el-main>
@@ -197,6 +199,17 @@ h2{
 }
 p{
   font-size: 18px;
+  span{
+    // color: var(--el-color-primary);
+    // 黑色背景
+    background: #282C34;
+    display: inline-block;
+    margin: 2px 0;
+    padding: 2px 8px;
+    color: #51ADEB;
+    border-radius: 4px;
+    font-size: 16px;
+  }
 }
 .help-img{
   margin: 20px 0;

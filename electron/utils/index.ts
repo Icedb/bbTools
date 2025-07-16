@@ -10,14 +10,21 @@ import { loadExcel, saveExcel } from './excel'
 let userData = app ? app.getPath('userData') : ''
 const filePath = `${userData}\\serverData.json`
 
-// 默认服务器配置
-let serverList = [
-  // { name: 'S1.2144一区（命运之轮）', value: 'hun01' },
-  { name: '混服S1', value: 'hun01' },
-  { name: '混服S2', value: 'hun02' },
-  { name: '国服', value: 'gf01' },
-  { name: 'B服', value: 'bilibili01' },
-]
+// 默认服务器配置（带版本号）
+// 获取项目版本号
+const defaultConfig = {
+  version: app.getVersion(), // 配置文件版本
+  servers: [
+    { name: '混服S1', value: 'hun01', display: true },
+    { name: '混服S2', value: 'hun02', display: true },
+    { name: '国服', value: 'gf01', display: true },
+    { name: 'B服01', value: 'bilibili01', display: true },
+    { name: 'B服02', value: 'bilibili02', display: true },
+    { name: 'UC服01', value: 'uc01', display: true },
+    { name: 'UC服02', value: 'uc02', display: true },
+    // { name: '当乐服', value: 'dangle01', display: true }
+  ]
+}
 
 // 判断文件是否存在
 const isFileExist = (path: string) => {
@@ -36,31 +43,115 @@ const sendMsg = (win: BrowserWindow, msg: string, type: string) => {
 }
 
 const getServerList = () => {
-   //验证文件是否存在
-   let bExistsSync = isFileExist(filePath);
-   let server = []
-   if (bExistsSync) {
-     // 读取配置文件
-     let data = fs.readFileSync(filePath, 'utf8')
-     if (data) {
-       try {
-         server = JSON.parse(data)
-       } catch (error) {
-         console.log(error)
-         return []
-       }
-     }
-   } else {
-     // 创建配置文件
-     let error = fs.writeFileSync(filePath, JSON.stringify(serverList))
-   }
- 
-   // console.log(req.body)
-   if (server && server.length > 0) {
-    return server
-   } else {
-    return serverList
-   }
+  let bExistsSync = isFileExist(filePath);
+  let userConfig = null;
+
+  if (bExistsSync) {
+    try {
+      let data = fs.readFileSync(filePath, 'utf8');
+      userConfig = JSON.parse(data);
+    } catch (error) {
+      console.log('配置文件解析失败:', error);
+      userConfig = null;
+    }
+  }
+
+  // 如果没有用户配置或版本不匹配，需要合并配置
+  if (!userConfig || !userConfig.version || userConfig.version !== defaultConfig.version) {
+    const mergedConfig = mergeConfigs(userConfig, defaultConfig);
+    
+    // 保存合并后的配置
+    try {
+      fs.writeFileSync(filePath, JSON.stringify(mergedConfig, null, 2));
+      return mergedConfig.servers;
+    } catch (error) {
+      console.log('保存配置文件失败:', error);
+      return defaultConfig.servers;
+    }
+  }
+
+  return userConfig.servers || defaultConfig.servers;
+}
+
+// 版本比较函数
+const compareVersions = (version1: string, version2: string): number => {
+  const v1Parts = version1.split('.').map(Number);
+  const v2Parts = version2.split('.').map(Number);
+  
+  for (let i = 0; i < Math.max(v1Parts.length, v2Parts.length); i++) {
+    const v1Part = v1Parts[i] || 0;
+    const v2Part = v2Parts[i] || 0;
+    
+    if (v1Part < v2Part) return -1;
+    if (v1Part > v2Part) return 1;
+  }
+  
+  return 0;
+}
+
+// 配置合并策略
+const mergeConfigs = (userConfig: any, defaultConfig: any) => {
+  if (!userConfig) {
+    return defaultConfig;
+  }
+
+  // 保留用户的自定义服务器
+  const userServers = userConfig.servers || [];
+  const defaultServers = defaultConfig.servers || [];
+
+  const serverMap = new Map();
+
+  // 比较版本号，决定优先级
+  const userVersion = userConfig.version || '0.0.0';
+  const defaultVersion = defaultConfig.version || '0.0.0';
+  const useDefaultPriority = compareVersions(defaultVersion, userVersion) >= 0;
+  if (useDefaultPriority) {
+    // 使用默认配置优先级
+    defaultServers.forEach(defaultServer => {
+      serverMap.set(defaultServer.value, { ...defaultServer, display: defaultServer.display ?? true });
+    });
+    // userServers内没有的再添加用户服务器，并合并display字段
+    userServers.forEach(userServer => {
+      if (!serverMap.has(userServer.value)) {
+        serverMap.set(userServer.value, { ...userServer, display: userServer.display ?? true });
+      } else {
+        // 如果服务器已存在，合并display字段（false覆盖true）
+        const existingServer = serverMap.get(userServer.value);
+        const mergedServer = {
+          ...existingServer,
+          display: (userServer.display === false || existingServer.display === false) ? false : true
+        };
+        serverMap.set(userServer.value, mergedServer);
+      }
+    });
+  } else {
+    userServers.forEach(userServer => {
+      serverMap.set(userServer.value, { ...userServer, display: userServer.display ?? true });
+    });
+    // defaultServers内没有的再添加默认服务器，并合并display字段
+    defaultServers.forEach(defaultServer => {
+      if (!serverMap.has(defaultServer.value)) {
+        serverMap.set(defaultServer.value, { ...defaultServer, display: defaultServer.display ?? true });
+      } else {
+        // 如果服务器已存在，合并display字段（false覆盖true）
+        const existingServer = serverMap.get(defaultServer.value);
+        const mergedServer = {
+          ...existingServer,
+          display: (defaultServer.display === false || existingServer.display === false) ? false : true
+        };
+        serverMap.set(defaultServer.value, mergedServer);
+      }
+    });
+  }
+
+  // 将 Map 转换为数组
+  const mergedServers = Array.from(serverMap.values());
+
+  return {
+    ...defaultConfig,
+    servers: mergedServers,
+    version: useDefaultPriority ? defaultConfig.version : userConfig.version
+  };
 }
 
 // 加载excel文件，获取多个sheet，然后对数据的id进行去重
@@ -72,6 +163,9 @@ const loadExcelData = () => {
         { name: 'Excel', extensions: ['xls', 'xlsx'] }
       ]
     })
+    if (!filePaths || filePaths.length === 0) {
+      return []
+    }
     const path = filePaths[0]
     const workSheetsFromFile = loadExcel(path)
     // 去重并生成根据sheet的多维数组

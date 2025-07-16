@@ -79,7 +79,7 @@ const getMapInfo = (historyObj: BattleInfo) => {
   if (
     historyObj &&
     historyObj.history &&
-    historyObj.history.length > 0 &&
+    Array.isArray(historyObj.history) &&
     !mapUrl.value
   ) {
     try {
