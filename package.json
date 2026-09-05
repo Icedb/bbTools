@@ -25,7 +25,7 @@
     "preview": "vite preview"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^5.0.4",
+    "@vitejs/plugin-vue": "^6.0.4",
     "electron": "^29.1.1",
     "electron-builder": "24.13.1",
     "sass": "^1.83.0",
